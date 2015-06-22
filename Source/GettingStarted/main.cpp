@@ -18,6 +18,17 @@ bool InitGlfw()
     return true;
 }
 
+bool InitGlew()
+{
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK)
+    {
+        std::cout << "Failed to initialize GLEW" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 bool InitWindow()
 {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -33,17 +44,7 @@ bool InitWindow()
     }
 
     glfwMakeContextCurrent(window);
-    return true;
-}
-
-bool InitGlew()
-{
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        return false;
-    }
+    glViewport(0 /*x*/, 0 /*y*/, width, height);
     return true;
 }
 
@@ -54,12 +55,12 @@ int main()
         return 1;
     }
 
-    if (!InitWindow())
+    if (!InitGlew())
     {
         return 1;
     }
 
-    if (!InitGlew())
+    if (!InitWindow())
     {
         return 1;
     }
