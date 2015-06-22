@@ -29,23 +29,19 @@ bool InitGlew()
     return true;
 }
 
-bool InitWindow()
+GLFWwindow* CreateWindow(const int width, const int height)
 {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    const int width = 800;
-    const int height = 600;
     const char* const title = "LearnOpenGL";
     GLFWwindow* const window = glfwCreateWindow(width, height, title, nullptr /*monitor*/, nullptr /*share*/);
     if (!window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
-        return false;
+        return nullptr;
     }
 
     glfwMakeContextCurrent(window);
-    glViewport(0 /*x*/, 0 /*y*/, width, height);
-    return true;
+    return window;
 }
 
 int main()
@@ -60,10 +56,14 @@ int main()
         return 1;
     }
 
-    if (!InitWindow())
+    const int width = 800;
+    const int height = 600;
+    const GLFWwindow* const window = CreateWindow(width, height);
+    if (!window)
     {
         return 1;
     }
+    glViewport(0 /*x*/, 0 /*y*/, width, height);
 
     glfwTerminate();
 
