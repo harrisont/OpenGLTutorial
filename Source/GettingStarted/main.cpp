@@ -18,17 +18,6 @@ bool InitGlfw()
     return true;
 }
 
-bool InitGlew()
-{
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "Failed to initialize GLEW" << std::endl;
-        return false;
-    }
-    return true;
-}
-
 GLFWwindow* CreateWindow(const int width, const int height)
 {
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -44,9 +33,28 @@ GLFWwindow* CreateWindow(const int width, const int height)
     return window;
 }
 
+bool InitGlew()
+{
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK)
+    {
+        std::cout << "Failed to initialize GLEW" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 int main()
 {
     if (!InitGlfw())
+    {
+        return 1;
+    }
+
+    const int width = 800;
+    const int height = 600;
+    GLFWwindow* const window = CreateWindow(width, height);
+    if (!window)
     {
         return 1;
     }
@@ -56,16 +64,14 @@ int main()
         return 1;
     }
 
-    const int width = 800;
-    const int height = 600;
-    const GLFWwindow* const window = CreateWindow(width, height);
-    if (!window)
-    {
-        return 1;
-    }
     glViewport(0 /*x*/, 0 /*y*/, width, height);
 
-    glfwTerminate();
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+    }
 
+    glfwTerminate();
     return 0;
 }
