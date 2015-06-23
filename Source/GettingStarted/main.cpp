@@ -63,6 +63,7 @@ void MainLoop(GLFWwindow* const window)
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
+        Render();
         glfwSwapBuffers(window);
     }
 }
