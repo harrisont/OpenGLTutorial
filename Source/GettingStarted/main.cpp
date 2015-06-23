@@ -84,9 +84,14 @@ std::unique_ptr<std::string> LinkShaderProgram(GLuint programId)
     return nullptr;
 }
 
-void Render()
+void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+    glUseProgram(shaderProgramId);
+    glBindVertexArray(vertexArrayId);
+    glBindVertexArray(0);
+
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -141,26 +146,29 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     }
     glDeleteShader(vertexShaderId);
     glDeleteShader(fragmentShaderId);
-    glUseProgram(shaderProgramId);
 
-    GLuint vertexBufferId;
-    glGenBuffers(1 /*n*/, &vertexBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
-    glEnableVertexAttribArray(0 /*index*/);
+    GLuint vertexArrayId;
+    glGenVertexArrays(1 /*n*/, &vertexArrayId);
+    glBindVertexArray(vertexArrayId);
+    {
+        GLuint vertexBufferId;
+        glGenBuffers(1 /*n*/, &vertexBufferId);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+        GLfloat vertices[] = {
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.0f, 0.5f, 0.0f
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
+        glEnableVertexAttribArray(0 /*index*/);
+    }
+    glBindVertexArray(0 /*array*/);
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        Render();
+        Render(shaderProgramId, vertexArrayId);
         glfwSwapBuffers(window);
     }
 
