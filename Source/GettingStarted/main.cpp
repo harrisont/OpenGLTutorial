@@ -151,8 +151,8 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     GLuint vertexArrayId;
     glGenVertexArrays(1 /*n*/, &vertexArrayId);
     glBindVertexArray(vertexArrayId);
+    GLuint vertexBufferId;
     {
-        GLuint vertexBufferId;
         glGenBuffers(1 /*n*/, &vertexBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
         GLfloat vertices[] = {
@@ -172,6 +172,9 @@ MainLoopResult MainLoop(GLFWwindow* const window)
         Render(shaderProgramId, vertexArrayId);
         glfwSwapBuffers(window);
     }
+
+    glDeleteVertexArrays(1 /*n*/, &vertexArrayId);
+    glDeleteBuffers(1 /*n*/, &vertexBufferId);
 
     return MainLoopResult::success;
 }
