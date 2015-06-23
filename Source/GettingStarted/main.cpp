@@ -91,7 +91,7 @@ void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
 
     glUseProgram(shaderProgramId);
     glBindVertexArray(vertexArrayId);
-    glDrawArrays(GL_TRIANGLES, 0 /*first*/, 3 /*count*/);
+    glDrawElements(GL_TRIANGLES, 6 /*count*/, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
 }
 
@@ -151,15 +151,26 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     glGenVertexArrays(1 /*n*/, &vertexArrayId);
     glBindVertexArray(vertexArrayId);
     GLuint vertexBufferId;
+    GLuint elementBufferId;
     {
         glGenBuffers(1 /*n*/, &vertexBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
         GLfloat vertices[] = {
-            -0.5f, -0.5f, 0.0f, // left
-             0.5f, -0.5f, 0.0f, // right
-             0.0f,  0.5f, 0.0f  // top
+             0.5f,  0.5f, 0.0f,  // Top Right
+             0.5f, -0.5f, 0.0f,  // Bottom Right
+            -0.5f, -0.5f, 0.0f,  // Bottom Left
+            -0.5f,  0.5f, 0.0f   // Top Left 
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glGenBuffers(1 /*n*/, &elementBufferId);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
+        GLuint indices[] = {
+            0, 1, 3,  // 1st triangle
+            1, 2, 3,  // 2nd triangle
+        };
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
         glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
         glEnableVertexAttribArray(0 /*index*/);
     }
