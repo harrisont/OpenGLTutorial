@@ -52,6 +52,15 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     }
 }
 
+void MainLoop(GLFWwindow* const window)
+{
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+        glfwSwapBuffers(window);
+    }
+}
+
 bool Run()
 {
     if (!InitGlfw())
@@ -76,11 +85,7 @@ bool Run()
 
     glViewport(0 /*x*/, 0 /*y*/, width, height);
 
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
-        glfwSwapBuffers(window);
-    }
+    MainLoop(window);
 
     glfwTerminate();
     return 0;
