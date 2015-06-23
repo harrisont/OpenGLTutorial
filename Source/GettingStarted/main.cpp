@@ -87,13 +87,12 @@ std::unique_ptr<std::string> LinkShaderProgram(GLuint programId)
 void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgramId);
     glBindVertexArray(vertexArrayId);
     glDrawArrays(GL_TRIANGLES, 0 /*first*/, 3 /*count*/);
     glBindVertexArray(0);
-
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 enum class MainLoopResult
