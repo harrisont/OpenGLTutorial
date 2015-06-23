@@ -154,6 +154,9 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     glDeleteShader(fragmentShaderId);
     glUseProgram(shaderProgramId);
 
+    glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
+    glEnableVertexAttribArray(0 /*index*/);
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
