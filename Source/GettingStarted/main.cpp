@@ -69,6 +69,21 @@ std::unique_ptr<std::string> CompileShader(GLuint shaderId)
     return nullptr;
 }
 
+// Return nullptr on compile success, error-string on failure.
+std::unique_ptr<std::string> LinkShaderProgram(GLuint programId)
+{
+    glLinkProgram(programId);
+    GLint success;
+    glGetProgramiv(programId, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        GLchar infoLog[1024];
+        glGetProgramInfoLog(programId, sizeof(infoLog), nullptr /*length*/, infoLog);
+        return std::make_unique<std::string>(infoLog);
+    }
+    return nullptr;
+}
+
 void Render()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -125,6 +140,19 @@ MainLoopResult MainLoop(GLFWwindow* const window)
         std::cerr << "Failed to fragment vertex shader. " << *compileFragmentShaderError << std::endl;
         return MainLoopResult::error;
     }
+
+    const GLuint shaderProgramId = glCreateProgram();
+    glAttachShader(shaderProgramId, vertexShaderId);
+    glAttachShader(shaderProgramId, fragmentShaderId);
+    const auto linkShaderProgramError = LinkShaderProgram(shaderProgramId);
+    if (linkShaderProgramError)
+    {
+        std::cerr << "Failed to link shader program. " << *linkShaderProgramError << std::endl;
+        return MainLoopResult::error;
+    }
+    glDeleteShader(vertexShaderId);
+    glDeleteShader(fragmentShaderId);
+    glUseProgram(shaderProgramId);
 
     while (!glfwWindowShouldClose(window))
     {
