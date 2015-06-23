@@ -44,7 +44,7 @@ bool InitGlew()
     return true;
 }
 
-int main()
+bool Run()
 {
     if (!InitGlfw())
     {
@@ -74,4 +74,9 @@ int main()
 
     glfwTerminate();
     return 0;
+}
+
+int main()
+{
+    return Run() ? 0 : 1;
 }
