@@ -98,17 +98,6 @@ enum class MainLoopResult
 
 MainLoopResult MainLoop(GLFWwindow* const window)
 {
-    GLuint vertexBufferId;
-    glGenBuffers(1 /*n*/, &vertexBufferId);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-
-    GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
-    };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     const GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     const GLchar* const vertexShaderSource =
         "#version 330 core\n"
@@ -153,6 +142,17 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     glDeleteShader(vertexShaderId);
     glDeleteShader(fragmentShaderId);
     glUseProgram(shaderProgramId);
+
+    GLuint vertexBufferId;
+    glGenBuffers(1 /*n*/, &vertexBufferId);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
     glEnableVertexAttribArray(0 /*index*/);
