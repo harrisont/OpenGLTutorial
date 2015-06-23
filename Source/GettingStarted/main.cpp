@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <memory>
+#include <string>
 
 bool InitGlfw()
 {
@@ -25,7 +27,7 @@ GLFWwindow* CreateWindow(const int width, const int height)
     GLFWwindow* const window = glfwCreateWindow(width, height, title, nullptr /*monitor*/, nullptr /*share*/);
     if (!window)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cerr << "Failed to create GLFW window" << std::endl;
         return nullptr;
     }
 
@@ -38,7 +40,7 @@ bool InitGlew()
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK)
     {
-        std::cout << "Failed to initialize GLEW" << std::endl;
+        std::cerr << "Failed to initialize GLEW" << std::endl;
         return false;
     }
     return true;
@@ -52,27 +54,94 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     }
 }
 
+// Return nullptr on compile success, error-string on failure.
+std::unique_ptr<std::string> CompileShader(GLuint shaderId)
+{
+    glCompileShader(shaderId);
+    GLint success;
+    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        GLchar infoLog[1024];
+        glGetShaderInfoLog(shaderId, sizeof(infoLog), nullptr /*length*/, infoLog);
+        return std::make_unique<std::string>(infoLog);
+    }
+    return nullptr;
+}
+
 void Render()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void MainLoop(GLFWwindow* const window)
+enum class MainLoopResult
 {
+    error,
+    success,
+};
+
+MainLoopResult MainLoop(GLFWwindow* const window)
+{
+    GLuint vertexBufferId;
+    glGenBuffers(1 /*n*/, &vertexBufferId);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+
+    GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
+    };
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    const GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+    const GLchar* const vertexShaderSource =
+        "#version 330 core\n"
+        "layout (location = 0) in vec3 position;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
+        "}\0";
+    glShaderSource(vertexShaderId, 1 /*count*/, &vertexShaderSource, nullptr /*length*/);
+    const auto compileVertexShaderError = CompileShader(vertexShaderId);
+    if (compileVertexShaderError)
+    {
+        std::cerr << "Failed to compile vertex shader. " << *compileVertexShaderError << std::endl;
+        return MainLoopResult::error;
+    }
+
+    const GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+    const GLchar* const fragmentShaderSource =
+        "#version 330 core\n"
+        "out vec4 color;\n"
+        "void main()\n"
+        "{\n"
+        "    color = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
+        "}\0";
+    glShaderSource(fragmentShaderId, 1 /*count*/, &fragmentShaderSource, nullptr /*length*/);
+    const auto compileFragmentShaderError = CompileShader(fragmentShaderId);
+    if (compileFragmentShaderError)
+    {
+        std::cerr << "Failed to fragment vertex shader. " << *compileFragmentShaderError << std::endl;
+        return MainLoopResult::error;
+    }
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
         Render();
         glfwSwapBuffers(window);
     }
+
+    return MainLoopResult::success;
 }
 
+// Return true on success, false on failure.
 bool Run()
 {
     if (!InitGlfw())
     {
-        return 1;
+        return false;
     }
 
     const int width = 800;
@@ -80,22 +149,26 @@ bool Run()
     GLFWwindow* const window = CreateWindow(width, height);
     if (!window)
     {
-        return 1;
+        return false;
     }
 
     glfwSetKeyCallback(window, KeyCallback);
 
     if (!InitGlew())
     {
-        return 1;
+        return false;
     }
 
     glViewport(0 /*x*/, 0 /*y*/, width, height);
 
-    MainLoop(window);
+    const auto mainLoopResult = MainLoop(window);
+    if (mainLoopResult == MainLoopResult::error)
+    {
+        return false;
+    }
 
     glfwTerminate();
-    return 0;
+    return true;
 }
 
 int main()
