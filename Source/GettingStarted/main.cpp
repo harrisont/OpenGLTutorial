@@ -90,6 +90,7 @@ void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
 
     glUseProgram(shaderProgramId);
     glBindVertexArray(vertexArrayId);
+    glDrawArrays(GL_TRIANGLES, 0 /*first*/, 3 /*count*/);
     glBindVertexArray(0);
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -155,9 +156,9 @@ MainLoopResult MainLoop(GLFWwindow* const window)
         glGenBuffers(1 /*n*/, &vertexBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
         GLfloat vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, 0.0f
+            -0.5f, -0.5f, 0.0f, // left
+             0.5f, -0.5f, 0.0f, // right
+             0.0f,  0.5f, 0.0f  // top
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 3 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
