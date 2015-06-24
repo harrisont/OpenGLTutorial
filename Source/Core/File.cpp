@@ -7,7 +7,7 @@ std::string FileRead(const char* const filePath)
     std::ifstream in(filePath, std::ios::in | std::ios::binary);
     if (!in)
     {
-        throw("Failed to open file.");
+        throw std::exception("Failed to open file.");
     }
 
     // Get the file size

@@ -217,5 +217,13 @@ bool Run()
 
 int main()
 {
-    return Run() ? 0 : 1;
+    try
+    {
+        return Run() ? 0 : 1;
+    }
+    catch (const std::exception& ex)
+    {
+        std::cerr << ex.what() << std::endl;
+        return 1;
+    }
 }
