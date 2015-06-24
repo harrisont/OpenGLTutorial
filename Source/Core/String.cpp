@@ -4,26 +4,15 @@
 
 std::string FormatString(const char* const formatString, ...)
 {
-    // Guess that the formatted string will need no more than two times as much as the length of the format string (plus one in case the size is 0).
-    auto formattedSize = 1 + 2 * strlen(formatString);
-
-    // If our guess for the formatted string size is too small, then it will use a larger guess the next iteration.
-    for (;;)
-    {
-        const auto formattedString = std::make_unique<char[]>(formattedSize);
-
-        va_list argptr;
-        va_start(argptr, formatString);
-        const auto numCharactersWritten = vsnprintf_s(&formattedString[0], formattedSize /*sizeOfBuffer*/, _TRUNCATE /*maxCount*/, formatString, argptr);
-        va_end(argptr);
-
-        if (numCharactersWritten == -1)
-        {
-            formattedSize *= 2;
-        }
-        else
-        {
-            return std::string(formattedString.get());
-        }
-    }
+    va_list argptr;
+    va_start(argptr, formatString);
+    const auto formattedSize = 1 + _vscprintf(formatString, argptr);
+    std::string result;
+    result.resize(formattedSize);
+    // This writes into the string's c_str() memory, which is unsafe, but works everywhere tested.
+    // The alternative is to write to a separate character buffer, then construct a string from that buffer.
+    // This alternative has the disadvantage of making a copy of the buffer.
+    char* const resultBuffer = const_cast<char*>(result.c_str());
+    vsnprintf_s(resultBuffer, formattedSize /*sizeOfBuffer*/, _TRUNCATE /*maxCount*/, formatString, argptr);
+    return result;
 }
