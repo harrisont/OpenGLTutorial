@@ -4,6 +4,7 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+#include <Core/File.h>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -104,14 +105,9 @@ enum class MainLoopResult
 MainLoopResult MainLoop(GLFWwindow* const window)
 {
     const GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const GLchar* const vertexShaderSource =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 position;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
-        "}\0";
-    glShaderSource(vertexShaderId, 1 /*count*/, &vertexShaderSource, nullptr /*length*/);
+    const std::string vertexShaderSource = FileRead("shader.vert");
+    const auto vertexShaderSourceCstr = vertexShaderSource.c_str();
+    glShaderSource(vertexShaderId, 1 /*count*/, &vertexShaderSourceCstr, nullptr /*length*/);
     const auto compileVertexShaderError = CompileShader(vertexShaderId);
     if (compileVertexShaderError)
     {
@@ -120,14 +116,9 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     }
 
     const GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const GLchar* const fragmentShaderSource =
-        "#version 330 core\n"
-        "out vec4 color;\n"
-        "void main()\n"
-        "{\n"
-        "    color = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
-        "}\0";
-    glShaderSource(fragmentShaderId, 1 /*count*/, &fragmentShaderSource, nullptr /*length*/);
+    const std::string fragmentShaderSource = FileRead("shader.frag");
+    const auto fragmentShaderSourceCstr = fragmentShaderSource.c_str();
+    glShaderSource(fragmentShaderId, 1 /*count*/, &fragmentShaderSourceCstr, nullptr /*length*/);
     const auto compileFragmentShaderError = CompileShader(fragmentShaderId);
     if (compileFragmentShaderError)
     {
