@@ -1,10 +1,11 @@
+#include "Shader.h"
+
 // GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
 // GLFW
 #include <GLFW/glfw3.h>
 
-#include <Core/File.h>
 #include <assert.h>
 #include <iostream>
 #include <memory>
@@ -56,89 +57,27 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     }
 }
 
-// Return nullptr on compile success, error-string on failure.
-std::unique_ptr<std::string> CompileShader(GLuint shaderId)
-{
-    glCompileShader(shaderId);
-    GLint success;
-    glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        GLchar infoLog[1024];
-        glGetShaderInfoLog(shaderId, sizeof(infoLog), nullptr /*length*/, infoLog);
-        return std::make_unique<std::string>(infoLog);
-    }
-    return nullptr;
-}
-
-// Return nullptr on compile success, error-string on failure.
-std::unique_ptr<std::string> LinkShaderProgram(GLuint programId)
-{
-    glLinkProgram(programId);
-    GLint success;
-    glGetProgramiv(programId, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        GLchar infoLog[1024];
-        glGetProgramInfoLog(programId, sizeof(infoLog), nullptr /*length*/, infoLog);
-        return std::make_unique<std::string>(infoLog);
-    }
-    return nullptr;
-}
-
-void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
+void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderProgramId);
+    glUseProgram(shaderProgram.id);
 
     glBindVertexArray(vertexArrayId);
     glDrawElements(GL_TRIANGLES, 6 /*count*/, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
 }
 
-enum class MainLoopResult
+void MainLoop(GLFWwindow* const window)
 {
-    error,
-    success,
-};
-
-MainLoopResult MainLoop(GLFWwindow* const window)
-{
-    const GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-    const std::string vertexShaderSource = FileRead("shader.vert");
-    const auto vertexShaderSourceCstr = vertexShaderSource.c_str();
-    glShaderSource(vertexShaderId, 1 /*count*/, &vertexShaderSourceCstr, nullptr /*length*/);
-    const auto compileVertexShaderError = CompileShader(vertexShaderId);
-    if (compileVertexShaderError)
-    {
-        std::cerr << "Failed to compile vertex shader. " << *compileVertexShaderError << std::endl;
-        return MainLoopResult::error;
-    }
-
-    const GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-    const std::string fragmentShaderSource = FileRead("shader.frag");
-    const auto fragmentShaderSourceCstr = fragmentShaderSource.c_str();
-    glShaderSource(fragmentShaderId, 1 /*count*/, &fragmentShaderSourceCstr, nullptr /*length*/);
-    const auto compileFragmentShaderError = CompileShader(fragmentShaderId);
-    if (compileFragmentShaderError)
-    {
-        std::cerr << "Failed to fragment vertex shader. " << *compileFragmentShaderError << std::endl;
-        return MainLoopResult::error;
-    }
-
-    const GLuint shaderProgramId = glCreateProgram();
-    glAttachShader(shaderProgramId, vertexShaderId);
-    glAttachShader(shaderProgramId, fragmentShaderId);
-    const auto linkShaderProgramError = LinkShaderProgram(shaderProgramId);
-    if (linkShaderProgramError)
-    {
-        std::cerr << "Failed to link shader program. " << *linkShaderProgramError << std::endl;
-        return MainLoopResult::error;
-    }
-    glDeleteShader(vertexShaderId);
-    glDeleteShader(fragmentShaderId);
+    const auto maybeVertexShader = CreateVertexShader("shader.vert");
+    assert(maybeVertexShader);
+    const auto maybeFragmentShader = CreateFragmentShader("shader.frag");
+    assert(maybeFragmentShader);
+    const auto maybeShaderProgram = CreateShaderProgram(std::move(*maybeVertexShader), std::move(*maybeFragmentShader));
+    assert(maybeShaderProgram);
+    const auto shaderProgram = *maybeShaderProgram;
 
     GLuint vertexArrayId;
     glGenVertexArrays(1 /*n*/, &vertexArrayId);
@@ -173,14 +112,12 @@ MainLoopResult MainLoop(GLFWwindow* const window)
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        Render(shaderProgramId, vertexArrayId);
+        Render(shaderProgram, vertexArrayId);
         glfwSwapBuffers(window);
     }
 
     glDeleteVertexArrays(1 /*n*/, &vertexArrayId);
     glDeleteBuffers(1 /*n*/, &vertexBufferId);
-
-    return MainLoopResult::success;
 }
 
 // Return true on success, false on failure.
@@ -208,12 +145,7 @@ bool Run()
 
     glViewport(0 /*x*/, 0 /*y*/, width, height);
 
-    const auto mainLoopResult = MainLoop(window);
-    if (mainLoopResult == MainLoopResult::error)
-    {
-        return false;
-    }
-
+    MainLoop(window);
     glfwTerminate();
     return true;
 }
