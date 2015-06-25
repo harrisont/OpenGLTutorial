@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <Core/File.h>
+#include <assert.h>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -91,6 +92,13 @@ void Render(const GLuint shaderProgramId, const GLuint vertexArrayId)
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgramId);
+
+    const auto timeValue = static_cast<GLfloat>(glfwGetTime());
+    const auto greenValue = static_cast<GLfloat>((sin(timeValue) / 2) + 0.5);
+    const auto vertexColorLocation = glGetUniformLocation(shaderProgramId, "ourColor");
+    assert(vertexColorLocation != -1);
+    glUniform4f(vertexColorLocation, 0, greenValue, 0, 1);
+
     glBindVertexArray(vertexArrayId);
     glDrawElements(GL_TRIANGLES, 6 /*count*/, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
