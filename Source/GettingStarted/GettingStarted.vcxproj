@@ -40,13 +40,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\lib\Debug\Win32;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\lib\Release\Win32;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
@@ -63,7 +63,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Core.lib;opengl32.lib;glfw3.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Core.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
       <AdditionalLibraryDirectories>$(SolutionDir)..\Build\Core\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -85,7 +85,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Core.lib;opengl32.lib;glfw3.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Core.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
