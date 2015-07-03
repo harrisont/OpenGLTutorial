@@ -21,6 +21,8 @@
     <ClInclude Include="String.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Optional.h" />
+    <ClInclude Include="Optional.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
