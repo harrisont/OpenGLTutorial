@@ -41,15 +41,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\lib\Debug\Win32;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\lib\Release\Win32;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\Bin\$(ProjectName)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\intermediate\</IntDir>
+    <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
