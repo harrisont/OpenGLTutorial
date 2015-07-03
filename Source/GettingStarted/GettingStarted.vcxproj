@@ -40,13 +40,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\Build\Core\$(Configuration)\;$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\include;D:\Dropbox\Programming\OpenGLTutorial\External\glew-1.12.0\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\Build\Core\$(Configuration)\;$(SolutionDir)..\Build\glew_static\$(Configuration)\;D:\Dropbox\Programming\OpenGLTutorial\External\glfw-3.1.1.bin.WIN32\lib-vc2013;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\Build\$(ProjectName)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\BuildIntermediate\$(ProjectName)\$(Configuration)\</IntDir>
@@ -66,7 +66,8 @@
       <AdditionalDependencies>Core.lib;opengl32.lib;glfw3.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>MSVCRT</IgnoreSpecificDefaultLibraries>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Build\Core\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,7 +90,8 @@
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Build\Core\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
