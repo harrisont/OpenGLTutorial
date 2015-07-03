@@ -6,6 +6,8 @@
 // GLFW
 #include <GLFW/glfw3.h>
 
+#include <SOIL.h>
+
 #include <assert.h>
 #include <iostream>
 #include <memory>
@@ -108,6 +110,10 @@ void MainLoop(GLFWwindow* const window)
         glEnableVertexAttribArray(1 /*index*/);
     }
     glBindVertexArray(0 /*array*/);
+
+    int width, height;
+    unsigned char* image = SOIL_load_image("container.jpg", &width, &height, nullptr /*channels*/, SOIL_LOAD_RGB);
+    (void)image;
 
     while (!glfwWindowShouldClose(window))
     {
