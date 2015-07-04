@@ -90,10 +90,11 @@ void MainLoop(GLFWwindow* const window)
         glGenBuffers(1 /*n*/, &vertexBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
         GLfloat vertices[] = {
-            // Positions         // Colors
-             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // Bottom Right
-            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // Bottom Left
-             0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // Top
+            // Positions          // Colors           // Texture Coords
+             0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // Top Right
+             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // Bottom Right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -101,19 +102,33 @@ void MainLoop(GLFWwindow* const window)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferId);
         GLuint indices[] = {
             0, 1, 2,  // 1st triangle
+            2, 3, 0,  // 2nd triangle
         };
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 6 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
+        glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 8 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
         glEnableVertexAttribArray(0 /*index*/);
-        glVertexAttribPointer(1 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 6 * sizeof(GLfloat) /*stride*/, reinterpret_cast<GLvoid*>(3 * sizeof(GLfloat)) /*pointer*/);
+        glVertexAttribPointer(1 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 8 * sizeof(GLfloat) /*stride*/, reinterpret_cast<GLvoid*>(3 * sizeof(GLfloat)) /*pointer*/);
         glEnableVertexAttribArray(1 /*index*/);
+        glVertexAttribPointer(2 /*index*/, 2 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 8 * sizeof(GLfloat) /*stride*/, reinterpret_cast<GLvoid*>(6 * sizeof(GLfloat)) /*pointer*/);
+        glEnableVertexAttribArray(2 /*index*/);
     }
     glBindVertexArray(0 /*array*/);
 
     int width, height;
-    unsigned char* image = SOIL_load_image("container.jpg", &width, &height, nullptr /*channels*/, SOIL_LOAD_RGB);
-    (void)image;
+    const char imagePath[] = "container.jpg";
+    unsigned char* image = SOIL_load_image(imagePath, &width, &height, nullptr /*channels*/, SOIL_LOAD_RGB);
+    if (!image)
+    {
+        std::cerr << "Failed to load image \"" << imagePath << "\": " << SOIL_last_result() << std::endl;
+    }
+    GLuint textureId;
+    glGenTextures(1 /*n*/, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, GL_RGB, width, height, 0 /*border*/, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     while (!glfwWindowShouldClose(window))
     {
