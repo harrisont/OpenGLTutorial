@@ -59,16 +59,18 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     }
 }
 
-void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId)
+void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId, const GLuint textureId)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram.id);
 
+    glBindTexture(GL_TEXTURE_2D, textureId);
     glBindVertexArray(vertexArrayId);
     glDrawElements(GL_TRIANGLES, 6 /*count*/, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void MainLoop(GLFWwindow* const window)
@@ -133,7 +135,7 @@ void MainLoop(GLFWwindow* const window)
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        Render(shaderProgram, vertexArrayId);
+        Render(shaderProgram, vertexArrayId, textureId);
         glfwSwapBuffers(window);
     }
 
