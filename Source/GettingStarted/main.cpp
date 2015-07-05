@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include <Core/Macros.h>
 
 // GLEW
 #define GLEW_STATIC
@@ -59,18 +60,59 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     }
 }
 
-void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId, const GLuint textureId)
+using TextureId = GLuint;
+
+struct Texture
+{
+    const TextureId id;
+
+    Texture(TextureId id)
+        : id(id)
+    {
+    }
+
+    Texture& operator=(const Texture&) = delete;
+};
+
+void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId, const unsigned vertexCount, const Texture texture1, const Texture texture2)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram.id);
 
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1.id);
+    glUniform1i(glGetUniformLocation(shaderProgram.id, "ourTexture1"), 0);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2.id);
+    glUniform1i(glGetUniformLocation(shaderProgram.id, "ourTexture2"), 1);
+    
     glBindVertexArray(vertexArrayId);
-    glDrawElements(GL_TRIANGLES, 6 /*count*/, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
+    glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Texture LoadAndBindTexture(const char* const imagePath)
+{
+    int width, height;
+    unsigned char* imageData = SOIL_load_image(imagePath, &width, &height, nullptr /*channels*/, SOIL_LOAD_RGB);
+    if (!imageData)
+    {
+        std::cerr << "Failed to load image \"" << imagePath << "\": " << SOIL_last_result() << std::endl;
+    }
+    TextureId id;
+    glGenTextures(1 /*n*/, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, GL_RGB, width, height, 0 /*border*/, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(imageData);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return Texture(id);
 }
 
 void MainLoop(GLFWwindow* const window)
@@ -88,6 +130,7 @@ void MainLoop(GLFWwindow* const window)
     glBindVertexArray(vertexArrayId);
     GLuint vertexBufferId;
     GLuint elementBufferId;
+    unsigned int vertexCount = 0;
     {
         glGenBuffers(1 /*n*/, &vertexBufferId);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
@@ -106,6 +149,7 @@ void MainLoop(GLFWwindow* const window)
             0, 1, 2,  // 1st triangle
             2, 3, 0,  // 2nd triangle
         };
+        vertexCount = ARRAY_LENGTH(indices);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
         glVertexAttribPointer(0 /*index*/, 3 /*size*/, GL_FLOAT /*type*/, GL_FALSE /*normalized*/, 8 * sizeof(GLfloat) /*stride*/, nullptr /*pointer*/);
@@ -117,27 +161,13 @@ void MainLoop(GLFWwindow* const window)
     }
     glBindVertexArray(0 /*array*/);
 
-    int width, height;
-    const char imagePath[] = "container.jpg";
-    unsigned char* image = SOIL_load_image(imagePath, &width, &height, nullptr /*channels*/, SOIL_LOAD_RGB);
-    if (!image)
-    {
-        std::cerr << "Failed to load image \"" << imagePath << "\": " << SOIL_last_result() << std::endl;
-    }
-    GLuint textureId;
-    glGenTextures(1 /*n*/, &textureId);
-    glBindTexture(GL_TEXTURE_2D, textureId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, GL_RGB, width, height, 0 /*border*/, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    SOIL_free_image_data(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture texture1 = LoadAndBindTexture("container.jpg");
+    Texture texture2 = LoadAndBindTexture("awesomeface.png");
 
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        Render(shaderProgram, vertexArrayId, textureId);
+        Render(shaderProgram, vertexArrayId, vertexCount, texture1, texture2);
         glfwSwapBuffers(window);
     }
 
