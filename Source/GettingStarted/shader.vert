@@ -11,5 +11,7 @@ void main()
 {
     gl_Position = vec4(position, 1.0);
     vertexColor = color;
-    vertexTextureCoord = texCoord;
+
+    // We swap the y-axis by substracing our coordinates from 1. This is done because most images have the top y-axis inversed with OpenGL's top y-axis.
+    vertexTextureCoord = vec2(texCoord.x, 1 - texCoord.y);
 };
