@@ -9,10 +9,13 @@
 
 #include <SOIL.h>
 
+#include <algorithm>
 #include <assert.h>
 #include <iostream>
 #include <memory>
 #include <string>
+
+float gMixValue = 0.5f;
 
 bool InitGlfw()
 {
@@ -58,6 +61,14 @@ void KeyCallback(GLFWwindow* const window, const int key, const int /*scancode*/
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+    else if (key == GLFW_KEY_UP)
+    {
+        gMixValue = std::min(1.0f, gMixValue + 0.05f);
+    }
+    else if (key == GLFW_KEY_DOWN)
+    {
+        gMixValue = std::max(0.0f, gMixValue - 0.05f);
+    }
 }
 
 using TextureId = GLuint;
@@ -74,7 +85,13 @@ struct Texture
     Texture& operator=(const Texture&) = delete;
 };
 
-void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId, const unsigned vertexCount, const Texture texture1, const Texture texture2)
+void Render(
+    const ShaderProgram& shaderProgram,
+    const GLuint vertexArrayId,
+    const unsigned vertexCount,
+    const Texture texture1,
+    const Texture texture2,
+    const float mixValue)
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -88,7 +105,9 @@ void Render(const ShaderProgram& shaderProgram, const GLuint vertexArrayId, cons
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2.id);
     glUniform1i(glGetUniformLocation(shaderProgram.id, "ourTexture2"), 1);
-    
+
+    glUniform1f(glGetUniformLocation(shaderProgram.id, "mixValue"), mixValue);
+
     glBindVertexArray(vertexArrayId);
     glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT /*type*/, 0 /*indices*/);
     glBindVertexArray(0);
@@ -108,6 +127,8 @@ Texture LoadAndBindTexture(const char* const imagePath)
     glBindTexture(GL_TEXTURE_2D, id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, GL_RGB, width, height, 0 /*border*/, GL_RGB, GL_UNSIGNED_BYTE, imageData);
     glGenerateMipmap(GL_TEXTURE_2D);
     SOIL_free_image_data(imageData);
@@ -167,7 +188,7 @@ void MainLoop(GLFWwindow* const window)
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
-        Render(shaderProgram, vertexArrayId, vertexCount, texture1, texture2);
+        Render(shaderProgram, vertexArrayId, vertexCount, texture1, texture2, gMixValue);
         glfwSwapBuffers(window);
     }
 
@@ -205,8 +226,16 @@ bool Run()
     return true;
 }
 
+void PrintUsage()
+{
+    std::cout << "Usage:" << std::endl
+        << "\tUp/Down: texture blending" << std::endl;
+}
+
 int main()
 {
+    PrintUsage();
+
     try
     {
         return Run() ? 0 : 1;
