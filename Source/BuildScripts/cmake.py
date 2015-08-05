@@ -2,6 +2,13 @@ import os
 import subprocess
 
 
+def _run_process(args):
+    """
+    :return: 0 on success, non-0 on failure
+    """
+    return subprocess.call(['cmake'] + args)
+
+
 def run(build_intermediate_dir, source_dir, generator):
     """
     :param generator: if None use the default generator
@@ -14,8 +21,15 @@ def run(build_intermediate_dir, source_dir, generator):
     # CMake args:
     #  -Wdev enable developer warnings
     #  -G specifies the generator
-    args = ['cmake', '-Wdev']
+    args = ['-Wdev']
     if generator:
         args.extend(['-G', generator])
     args.append(source_dir)
-    return subprocess.call(args)
+    return _run_process(args)
+
+
+def build(build_intermediate_dir):
+    """
+    :return: 0 on success, non-0 on failure
+    """
+    return _run_process(['--build', build_intermediate_dir])
