@@ -2,7 +2,6 @@
 
 #include <Core/Optional.h>
 
-#define GLEW_STATIC
 #include <GL/glew.h>
 
 using ShaderId = const GLuint;
