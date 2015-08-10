@@ -2,17 +2,20 @@ import cmake
 import directories
 import function_timing
 
+import logging
+
 
 def generate():
     """
-    :return: 0 on success, non-0 on failure
+    :return: True on success, False on failure
     """
-    return cmake.run(directories.BUILD_INTERMEDIATE_DIR, directories.SOURCE_DIR, generator=None)
+    generator = 'Visual Studio 12 2013'
+    return cmake.run(directories.BUILD_INTERMEDIATE_DIR, directories.SOURCE_DIR, generator)
 
 
 def time_generate():
     """
-    :return: 0 on success, non-0 on failure
+    :return: True on success, False on failure
     """
     print('Running CMake')
     print('-' * 100)
@@ -23,8 +26,9 @@ def time_generate():
 
 
 def main():
-    result = time_generate()
-    exit(result)
+    logging.basicConfig(level=logging.INFO)
+    succeeded = time_generate()
+    exit(0 if succeeded else 1)
 
 
 if __name__ == '__main__':

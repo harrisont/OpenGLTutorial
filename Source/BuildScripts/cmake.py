@@ -1,18 +1,21 @@
+import logging
 import os
 import subprocess
 
 
 def _run_process(args):
     """
-    :return: 0 on success, non-0 on failure
+    :return: True on success, False on failure
     """
-    return subprocess.call(['cmake'] + args)
+    logging.info('Running CMake: {}'.format(args))
+    exit_code = subprocess.call(['cmake'] + args)
+    return True if exit_code == 0 else False
 
 
 def run(build_intermediate_dir, source_dir, generator):
     """
     :param generator: if None use the default generator
-    :return: 0 on success, non-0 on failure
+    :return: True on success, False on failure
     """
     # Out-of-source build
     os.makedirs(build_intermediate_dir, exist_ok=True)
@@ -21,6 +24,7 @@ def run(build_intermediate_dir, source_dir, generator):
     # CMake args:
     #  -Wdev enable developer warnings
     #  -G specifies the generator
+    #  -D define
     args = ['-Wdev']
     if generator:
         args.extend(['-G', generator])
@@ -30,6 +34,7 @@ def run(build_intermediate_dir, source_dir, generator):
 
 def build(build_intermediate_dir):
     """
-    :return: 0 on success, non-0 on failure
+    :return: True on success, False on failure
     """
-    return _run_process(['--build', build_intermediate_dir])
+    msbuild_flags = ['/nologo', '/verbosity:minimal']
+    return _run_process(['--build', build_intermediate_dir, '--'] + msbuild_flags)
