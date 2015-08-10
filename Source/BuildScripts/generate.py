@@ -9,8 +9,7 @@ def generate():
     """
     :return: True on success, False on failure
     """
-    generator = 'Visual Studio 12 2013'
-    return cmake.run(directories.BUILD_INTERMEDIATE_DIR, directories.SOURCE_DIR, generator)
+    return cmake.run(directories.BUILD_INTERMEDIATE_DIR, directories.SOURCE_DIR, generator=None)
 
 
 def time_generate():
