@@ -7,7 +7,7 @@ set(EXECUTABLE_OUTPUT_PATH ${buildDir}/${PROJECT_NAME})
 AddGlobbedFiles(source .)
 
 include_directories(
-    ${sourceDir}/External/glfw-3.1.1.bin.WIN32/include
+    ${sourceDir}/External/glfw-3.1.1/include
     ${sourceDir}/External/glew-1.12.0/include
     "${sourceDir}/External/Simple OpenGL Image Library/src")
 
