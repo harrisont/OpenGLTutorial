@@ -16,4 +16,6 @@ set(CMAKE_CXX_FLAGS "/W4 /WX /EHsc /GR- /analyze")
 # /RTC1 runtime checks
 set(CMAKE_CXX_FLAGS_DEBUG "/MDd /ZI /Ob0 /Od /RTC1")
 
-set(CMAKE_EXE_LINKER_FLAGS "/WX /SAFESEH:NO")
+# /WX treat warnings as errors
+set(CMAKE_EXE_LINKER_FLAGS "/WX")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/SAFESEH:NO")
