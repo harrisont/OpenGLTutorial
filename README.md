@@ -8,8 +8,13 @@ Following tutorial from http://learnopengl.com/.
 ## Setup
 cmake must be on the PATH.
 
-## Build Steps
+## Build
 1. Generate: `python Source/BuildScripts/generate.py`
 1. Build: one of
     * `python Source/BuildScripts/build.py`
     * Open the generated project with the appropriate generator (Visual Studio, XCode, etc.) and build it there.
+
+## Run
+`Build/GettingStarted/{config}/GettingStarted.exe`
+
+For running in Visual Studio, set GettingStarted properties > Debugging > Working Directory to `$(TargetDir)`. 
