@@ -15,3 +15,5 @@ set(CMAKE_CXX_FLAGS "/W4 /WX /EHsc /GR- /analyze")
 # /Od optimizations disabled
 # /RTC1 runtime checks
 set(CMAKE_CXX_FLAGS_DEBUG "/MDd /ZI /Ob0 /Od /RTC1")
+
+set(CMAKE_EXE_LINKER_FLAGS "/WX /SAFESEH:NO")

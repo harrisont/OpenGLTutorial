@@ -4,18 +4,18 @@ project(OpenGLTutorial)
 # CMAKE_SOURCE_DIR should be at /[root]/Source/.
 get_filename_component(repositoryDir ${CMAKE_SOURCE_DIR}/.. ABSOLUTE)
 
-#set(buildDir ${repositoryDir}/Build)
-#set(sourceDir ${repositoryDir}/Source)
+set(sourceDir ${repositoryDir}/Source)
+set(buildDir ${repositoryDir}/Build)
 set(cmakeScriptsDir ${sourceDir}/CMakeScripts)
 
-#set(CMAKE_INSTALL_PREFIX ${buildDir})
-
-#include_directories(
-#    ${sourceDir})
+include_directories(
+    ${sourceDir})
 
 # Use solution folders.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 include("${cmakeScriptsDir}/BuildFlags.cmake")
 
-#add_subdirectory(Core)
+add_subdirectory(External)
+add_subdirectory(Core)
+add_subdirectory(GettingStarted)
