@@ -226,6 +226,7 @@ bool Run()
 void PrintUsage()
 {
     std::cout << "Usage:" << std::endl
+        << "\tEsc: quit" << std::endl
         << "\tUp/Down: texture blending" << std::endl;
 }
 
